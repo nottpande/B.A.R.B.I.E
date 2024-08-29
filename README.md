@@ -1,4 +1,4 @@
-# B.A.R.B.I.E: Bilingual Assistant for Recognizing, Bridging, Interpreting, and Executing
+# B.A.R.B.I.E: Brilliant Artificial Response-Based Interactive Entity
 
 **B.A.R.B.I.E** is a voice assistant designed to empower Kannada-speaking individuals, especially those in the villages of Karnataka who face challenges interacting with smartphones and computers due to language barriers. B.A.R.B.I.E aims to provide these users with equal access to the resources that technology offers in today's world.
 
