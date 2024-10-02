@@ -31,9 +31,15 @@ def process_kannada_file(input_file, output_file, stopword_file):
     print(f"Stopword removal completed. Processed file saved as: {output_file}")
 
 # Specify file paths
-input_file = "line_index_male.tsv"          # Input file containing 4000+ lines of Kannada text
-output_file = "processed_kannada_text.txt"  # Output file for storing cleaned text
+# input_file_male = "line_index_male.tsv"          # Input file containing 4000+ lines of Kannada text
+# input_file_female = "line_index_female.tsv"          # Input file containing 4000+ lines of Kannada text
+input_file_manual = "manual_text.txt"          # Input file containing 4000+ lines of Kannada text
+output_file_male = "processed_kannada_text_male.txt"  # Output file for storing cleaned text
+output_file_female = "processed_kannada_text_female.txt"  # Output file for storing cleaned text
+output_file_manual = "processed_kannada_text_manual.txt"  # Output file for storing cleaned text
 stopword_file = "kannada_words.txt"     # Stopword file
 
 # Run the stopword removal process
-process_kannada_file(input_file, output_file, stopword_file)
+# process_kannada_file(input_file_male, output_file_female, stopword_file)
+# process_kannada_file(input_file_male, output_file_male, stopword_file)
+process_kannada_file(input_file_manual, output_file_manual, stopword_file)

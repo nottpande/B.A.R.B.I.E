@@ -25,7 +25,7 @@ def pos_tag_line(line, pos_dict):
 # Automate POS tagging for a file
 def pos_tag_file(input_file, output_file, pos_file):
     pos_dict = load_pos_tags(pos_file)  # Load POS tags from dictionary
-    with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'a', encoding='utf-8') as outfile:
+    with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
         for line in infile:
             tagged_tokens = pos_tag_line(line, pos_dict)
             # Format: "word1_TAG word2_TAG ..." and write to file
