@@ -8,7 +8,7 @@ def load_corpus(filepath):
         corpus = f.readlines()
     return [sentence.strip() for sentence in corpus]
 
-corpus_file = "../Data/corpus.txt"
+corpus_file = "Data/corpus.txt"
 
 # Add a progress bar while loading the corpus
 print("Loading corpus...")
