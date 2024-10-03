@@ -1,17 +1,14 @@
-from collections import Counter, defaultdict
-from transformers import AutoTokenizer
+import re
+from collections import defaultdict
 from tqdm import tqdm
 
 class BPE:
     """Byte-Pair Encoding: Subword-based tokenization algorithm."""
-
+    
     def __init__(self, corpus, vocab_size):
         """Initialize BPE tokenizer."""
         self.corpus = corpus
         self.vocab_size = vocab_size
-        
-        # Pre-tokenize the corpus into words
-        self.tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         self.word_freqs = defaultdict(int)
         self.splits = {}
         self.merges = {}
@@ -21,9 +18,8 @@ class BPE:
         print("Computing word frequencies...")
         # Compute the frequencies of each word in the corpus with progress display
         for text in tqdm(self.corpus, desc="Processing corpus", unit=" sentence"):
-            words_with_offsets = self.tokenizer.backend_tokenizer.pre_tokenizer.pre_tokenize_str(text)
-            new_words = [word for word, offset in words_with_offsets]
-            for word in new_words:
+            words = text.split()  # Assuming text is already preprocessed
+            for word in words:
                 self.word_freqs[word] += 1
 
         # Compute the base vocabulary of all characters in the corpus
@@ -76,24 +72,26 @@ class BPE:
 
     def merge_pair(self, a, b):
         """Merge the given pair."""
+        merged_token = a + b
         for word in self.word_freqs:
             split = self.splits[word]
-            if len(split) == 1:
-                continue
+            new_split = []
             i = 0
-            while i < len(split) - 1:
-                if split[i] == a and split[i + 1] == b:
-                    split = split[:i] + [a + b] + split[i + 2:]
+            while i < len(split):
+                if i < len(split) - 1 and split[i] == a and split[i + 1] == b:
+                    new_split.append(merged_token)  # Merge the pair
+                    i += 2  # Skip the next character as it's merged
                 else:
+                    new_split.append(split[i])
                     i += 1
-            self.splits[word] = split
+            self.splits[word] = new_split
         return self.splits
 
     def tokenize(self, text):
         """Tokenize a given text with trained BPE tokenizer."""
         print("Tokenizing text...")
-        pre_tokenized_text = self.tokenizer._tokenizer.pre_tokenizer.pre_tokenize_str(text)
-        splits_text = [[l for l in word] for word in pre_tokenized_text]
+        words = text.split()  # Assuming text is already preprocessed
+        splits_text = [[c for c in word] for word in words]
 
         # Wrap tokenization process in tqdm to show progress
         for pair, merge in tqdm(self.merges.items(), desc="Applying merges", unit=" pair"):
