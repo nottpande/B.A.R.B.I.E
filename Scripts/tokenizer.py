@@ -8,7 +8,7 @@ def load_corpus(filepath):
         corpus = f.readlines()
     return [sentence.strip() for sentence in corpus]
 
-#sample corpus, to check the working of the model
+"""#sample corpus, to check the working of the model
 corpus = [
     "The quick brown fox jumps over the lazy dog.",
     "ನಾನು ಕನ್ನಡದಲ್ಲಿದ್ದುಕೊಂಡು ವರ್ತಮಾನಗಳನ್ನು ಕಲಿಯುತ್ತೇನೆ.",  # "I am learning tenses in Kannada."
@@ -17,8 +17,8 @@ corpus = [
     "Artificial Intelligence is transforming industries.",
     "ಕೃತ್ರಿಮ ಬುದ್ಧಿಮತ್ತೆ ಕೈಗಾರಿಕೆಗಳನ್ನು ಪರಿವರ್ತಿಸುತ್ತಿದೆ."  # "Artificial intelligence is transforming industries."
 ]
+"""
 
-'''
 
 # Loading the corpus dataset (to train the model)
 
@@ -31,10 +31,9 @@ with tqdm(total=1, desc="Loading Corpus") as pbar:
     pbar.update(1)
 print("Corpus Loaded Successfully!")
 
-'''
 
 # Initialize and train BPE tokenizer with progress display
-bpe = BPE(corpus, vocab_size=10000) #10000 for the sample corpus, and #100,000 for the dataset
+bpe = BPE(corpus, vocab_size=100000)
 print("Training BPE tokenizer...")
 merges = bpe.train()
 
@@ -47,7 +46,7 @@ tokenized_text_kn = bpe.tokenize(text_kn)
 print("Tokenized text english: \n",tokenized_text_en)
 print("Tokenized text Kannada: \n",tokenized_text_kn)
 
-'''
+
 
 # Save the trained BPE tokenizer model
 
@@ -57,5 +56,3 @@ with tqdm(total=1, desc="Saving Model") as pbar:
         pickle.dump(merges, f)
     pbar.update(1)
 print("BPE tokenizer model saved successfully!")
-
-'''

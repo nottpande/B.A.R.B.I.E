@@ -1,17 +1,36 @@
 import string
 import re
 import json
+import os
 
 class ContractionHandler:
     def __init__(self, contractions_file):
         # Load contractions from the specified JSON file
-        with open(contractions_file, 'r', encoding='utf-8') as f:
-            self.contractions_dict = json.load(f)
+        print("In Preprocessing.py")
+        print(contractions_file)
+        if not os.path.isfile(contractions_file):
+            raise FileNotFoundError(f"Contraction file does not exist: {contractions_file}")
 
+        try:
+            with open(contractions_file, 'r', encoding='utf-8') as f:
+                self.contractions_dict = json.load(f)
+            print("Contractions loaded successfully.")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error decoding JSON: {e}")
+        except Exception as e:
+            raise RuntimeError(f"An error occurred while loading the contractions file: {e}")
     def expand_contractions(self, text):
         """
         Expands contractions in the given text.
         """
+        # Check if the input is None or not a string
+        if text is None:
+            print("Input text is None.")
+            return None  # or raise an exception if preferred
+        elif not isinstance(text, str):
+            print(f"Expected a string input but got: {type(text)}")
+            return None  # or raise an exception if preferred
+
         words = text.split()
         expanded_text = []
 
@@ -27,6 +46,7 @@ class ContractionHandler:
                 expanded_text.append(word)  # Keep the word unchanged if no contraction found
 
         return ' '.join(expanded_text)
+
 
 
 # Class for lowercasing text
@@ -366,61 +386,23 @@ class TextNormalizerEnglish:
     This class aggregates all the other preprocessing classes to provide
     a complete normalization pipeline.
     """
-    def __init__(self, stopword_file=None, contraction_file=None):
+    def __init__(self, contraction_file):
         self.lowercase_handler = LowercaseHandler()
         self.whitespace_normalizer = WhitespaceNormalizer()
-        self.punctuation_remover = PunctuationRemover()
-        self.stopword_remover = StopwordRemover(stopword_file)
         self.empty_line_remover = EmptyLineRemover()
         self.contraction_handler = ContractionHandler(contraction_file)
-        self.english_stemmer = EnglishStemmer()  # Initialize EnglishStemmer
 
     def normalize(self, text):
         """
         Perform complete text normalization.
         """
-        # Step 1: Expand contractions
         text = self.lowercase_handler.to_lowercase(text)
-        # Step 2: Convert to lowercase
         text = self.contraction_handler.expand_contractions(text)
-        # Step 3: Remove punctuation
-        text = self.punctuation_remover.remove_punctuation(text)
-        # Step 4: Remove stopwords
-        text = self.stopword_remover.remove_stopwords(text)
-        # Step 5: Stem the remaining words
-        text = self.english_stemmer.stem_sentence(text)  # Stem the words after removing stopwords
-        # Step 6: Normalize whitespaces
         text = self.whitespace_normalizer.normalize_whitespaces(text)
-        # Step 7: Remove empty lines (if applicable)
         if self.empty_line_remover.is_empty_line(text):
             return ""
         
         return text
-
-class TestPPEnglish:
-    def __init__(self, input_file, output_file, stopword_file=None, contraction_file=None):
-        """
-        Initialize the TestPP class with input and output file paths.
-        """
-        self.input_file = input_file
-        self.output_file = output_file
-        self.stopword_file = stopword_file
-        self.contraction_file = contraction_file
-
-    def process_english_file(self):
-        """
-        Processes the English text file by normalizing it using the TextNormalizer class.
-        """
-        normalizer = TextNormalizerEnglish(self.stopword_file, self.contraction_file)  # Initialize the TextNormalizer
-        
-        with open(self.input_file, 'r', encoding='utf-8') as infile, open(self.output_file, 'a', encoding='utf-8') as outfile:
-            for line in infile:
-                normalized_line = normalizer.normalize(line)  # Normalize each line
-                if normalized_line:  # Skip empty lines after normalization
-                    outfile.write(normalized_line + "\n")  # Write the cleaned line to the output file
-
-        print(f"Text processing completed. Processed file saved as: {self.output_file}")
-
 
 class TextNormalizerKannada:
     """
@@ -429,53 +411,14 @@ class TextNormalizerKannada:
     """
     def __init__(self):
         self.whitespace_normalizer = WhitespaceNormalizer()
-        self.punctuation_remover = PunctuationRemover()
-        self.stopword_remover = StopwordRemover()  # You can load a Kannada stopword file if you have one
         self.empty_line_remover = EmptyLineRemover()
-        self.kannada_stemmer = KannadaStemmer()  # Assuming you have implemented this class already
 
     def normalize(self, text):
         """
         Perform complete text normalization for Kannada.
         """
-        # Step 2: Remove punctuation
-        text = self.punctuation_remover.remove_punctuation(text)
-
-        # Step 3: Remove stopwords
-        text = self.stopword_remover.remove_stopwords(text)
-
-        # Step 4: Normalize whitespaces
         text = self.whitespace_normalizer.normalize_whitespaces(text)
-
-        # Step 5: Stem the text
-        text = self.kannada_stemmer.stem_sentence(text)
-
-        # Step 6: Remove empty lines (if applicable)
         if self.empty_line_remover.is_empty_line(text):
             return ""
 
         return text
-
-
-class TestPPKannada:
-    def __init__(self, input_file, output_file, stopword_file=None):
-        """
-        Initialize the TestPPKannada class with input and output file paths.
-        """
-        self.input_file = input_file
-        self.output_file = output_file
-        self.stopword_file = stopword_file
-
-    def process_kannada_file(self):
-        """
-        Processes the Kannada text file by normalizing it using the TextNormalizerKannada class.
-        """
-        normalizer = TextNormalizerKannada()  # Initialize the TextNormalizer for Kannada
-
-        with open(self.input_file, 'r', encoding='utf-8') as infile, open(self.output_file, 'a', encoding='utf-8') as outfile:
-            for line in infile:
-                normalized_line = normalizer.normalize(line)  # Normalize each line
-                if normalized_line:  # Skip empty lines after normalization
-                    outfile.write(normalized_line + "\n")  # Write the cleaned line to the output file
-
-        print(f"Kannada text processing completed. Processed file saved as: {self.output_file}")
