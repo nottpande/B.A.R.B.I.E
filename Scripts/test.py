@@ -57,3 +57,20 @@ print(contextual_embeddings)
 print(f'Contextual Embedding shape: {contextual_embeddings.shape}')
 contextual_embeddings
 '''
+
+import pickle
+from src.RandomIndexing import Translator
+
+# Load the saved translator model
+with open('./Models/translator_model_eng2kan.pkl', 'rb') as model_file:
+    translator = pickle.load(model_file)
+
+print("Model loaded successfully!")
+# Example English sentence to translate
+english_sentence = "Hello, how are you?"
+
+# Translate using the loaded model
+translated_sentence = translator.translate(english_sentence)
+
+print("Translated Sentence:", translated_sentence)
+
